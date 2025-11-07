@@ -13,6 +13,7 @@ const Write = () => {
      content:'',
      writer:'',
     })
+
     const handleSubmit = (e)  => {
       e.preventDefault(); //제출 일시 중지
       axios.post("http://localhost:8085/api/board", formData);
@@ -26,10 +27,12 @@ const Write = () => {
             ...p, [name] : value
         }))
     }
+
     // ok를 할 경우 게시물 목록으로 돌려보내기   기능이 하나이기 때문에 if 다음 navigate 는 {} 생략 후 작성
     const handleCancel = () => {
         if (window.confirm("작성을 취소하시겠습니까?"))  navigate('/board');
     }
+
     return(
         <div className="page-container">
             <h1>글쓰기</h1>
