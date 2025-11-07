@@ -18,12 +18,13 @@ const Board = () => {
         axios
             .get("http://localhost:8085/api/board/all")
             .then(res =>{
-                console.log("boards : ", boards);
+                console.log("1. boards : ", boards);
                 // res.data 백엔드에서 가져온 데이터를
                 // boards 에 넣어주기 전 이므로, 데이터가 0 인 상태가 맞음
                 console.log("백엔드에서 가져온 데이터 : ", res.data);
                 console.log("백엔드에서 가져온 데이터를 boards 에 저장 : ", setBoards(res.data));
                 setBoards(res.data); // boards 변수이름에 데이터 저장기능 실행
+                console.log("2. boards : ", boards);
             })
             .catch( e => alert("데이터를 가져올 수 없습니다.")); // {} 생략
     }, []);
@@ -47,36 +48,41 @@ const Board = () => {
 
             <table className="board-table">
                 <thead>
-                <tr>
-                    <th>번호</th>
-                    <th>제목</th>
-                    <th>작성자</th>
-                    <th>조회수</th>
-                    <th>작성일</th>
-                </tr>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>조회수</th>
+                        <th>작성일</th>
+                    </tr>
                 </thead>
                 <tbody>
-                {/*
-                    content: "nice to meet you!"
-                    createdAt: "2025-11-07 11:38:18"
-                    id: 11
-                    popularUpdateAt: null
-                    ranking: null
-                    title: "hello"
-                    updatedAt: "2025-11-07 11:38:18"
-                    viewCount: 0
-                    writer: "user1"
-                */}
-                {boards
-                    .map((b) => (
-                <tr>
-                    <th onClick={ () => handleIDClick(b.id)}>{b.id}</th>
-                    <th>{b.title}</th>
-                    <th>{b.writer}</th>
-                    <th>{b.viewCount}</th>
-                    <th>{b.createdAt}</th> {/* 2025-11-07 11:38:18  -> 2025-11-07*/}
-                </tr>
-                ))}
+                    {/*
+                        content: "nice to meet you!"
+                        createdAt: "2025-11-07 11:38:18"
+                        id: 11
+                        popularUpdateAt: null
+                        ranking: null
+                        title: "hello"
+                        updatedAt: "2025-11-07 11:38:18"
+                        viewCount: 0
+                        writer: "user1"
+                    */}
+
+                    {/*
+                    1. 제목 클릭해도 게시물에 들어가도록 설정
+                    2. error 해결
+                    
+                    */}
+                    {boards .map((b) => (
+                        <tr key={b.id}>
+                            <td onClick={() => handleIDClick(b.id)}>{b.id}</td>
+                            <td>{b.title}</td>
+                            <td>{b.writer}</td>
+                            <td>{b.viewCount}</td>
+                            <td>{b.createdAt}</td> {/* 2025-11-07 11:38:18  -> 2025-11-07*/}
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

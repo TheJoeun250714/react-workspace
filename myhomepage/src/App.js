@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import MyPage from "./pages/MyPage";
 import Write from "./pages/Write";
 import './App.css';
+import BoardDetail from "./pages/BoardDetail";
 // 단순히 가져와서 적용할 때는 from 생략
 // 1. 라우팅에 필요한 컴포넌트 임포트
 //    공통 스타일 임포트
@@ -30,6 +31,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Main />} />
                 <Route path="/board" element={<Board />} />
+                <Route path="/board/:id" element={<BoardDetail />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/mypage" element={<MyPage />} />
