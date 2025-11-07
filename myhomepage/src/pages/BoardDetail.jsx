@@ -13,7 +13,8 @@ const BoardDetail = () => {
             .then((res => {
                 console.log(res.data);
                 setBoard(res.data);
-                // 로딩상태 해지
+                // 3. 로딩상태 해지
+                setLoading(false);
             }))
             .catch(e => {
                 alert("게시물을 불러올 수 없습니다.");

@@ -72,12 +72,14 @@ const Board = () => {
                     {/*
                     1. 제목 클릭해도 게시물에 들어가도록 설정
                     2. error 해결
-                    
+
+                     시도 방법
+                     1. table 제목 눌렀을 때 link onClick 후
                     */}
                     {boards .map((b) => (
                         <tr key={b.id}>
                             <td onClick={() => handleIDClick(b.id)}>{b.id}</td>
-                            <td>{b.title}</td>
+                            <td onClick={() => handleIDClick(b.id)}>{b.title}</td>
                             <td>{b.writer}</td>
                             <td>{b.viewCount}</td>
                             <td>{b.createdAt}</td> {/* 2025-11-07 11:38:18  -> 2025-11-07*/}
