@@ -1,6 +1,7 @@
 // 회원가입
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios";
+import {clear} from "@testing-library/user-event/dist/clear";
 
 const Signup = () => {
 
@@ -14,7 +15,7 @@ const Signup = () => {
 
     });
 // 클라이언트가 회사가 원하는 방향으로 정보를 작성하지 않았을 경우 띄워주는 메세지 초기 표기
-    const [message, SetMessage] = useState({
+    const [message, setMessage] = useState({
         email:'받을 수 있는 이메일을 입력하세요.',
         authKey:'',
         password : '영어, 숫자 6~20글자 사이로 입력해주세요.',
@@ -33,7 +34,98 @@ const Signup = () => {
         min:4,
         sec:59,
         active:false
-    })
+    });
+    const timerRef =useRef(null);
+
+
+    // 초의 경우 지속적으로 1초마다 시간을 줄이고, 0분 0초 일 경우 인증 실패 처리
+    // 3분 00초일 경우 59 초부터 다시 시작하도록 세팅
+    useEffect(() => {
+        if(timer.active) {
+            timerRef.current = setInterval(() => {
+                setTimer( p => {
+                    // 분 초가 모두 0일 때 시간초 중지하고, 인증 실패로 종결
+                    if(p.min === 0 && p.sec === 0 ) {
+                        clearInterval(timerRef.current);
+                        setCheckObj(p => ({...p,authKey: false}));
+                        setMessage(p => ({...p, authKey: '시간이 만료되었습니다.'}));
+                        return {...p, active:false};
+                    }
+                    // 초가 0 일 때는 59초부터 다시시작
+                    if(p.sec === 0) {
+                        return  { min: p.min -1 , sec:59, active:true};
+                    }
+                    // 이외에는 초를 1초마다 -1 씩 줄여서 전달
+                    return  {...p, sec: p.sec -1};
+                });
+            },1000);
+        }
+        return () => clearInterval(timerRef.current);
+    }, [timer.active]);
+
+
+    /*
+    handleSubmit handleChange 의 경우 특정 값을 반환하는 것이 아니라
+    기능을 수행하는 목적을 가진 메서드
+    zeroPlus 의 경우 메서드를 수행한 후, 수행된 결과를 표기
+    zeroPlus 기능을 실행하고, 실행된 결과를 반환하는 return 이  필요
+
+    1번 zeroPlus 기능
+    const zeroPlus = (num) => {
+       js 기능을 추가적으로 작성하고 , 작성된 결과를 return 반환하여 html 형태로 전달
+       return(
+        num < 10 ? `0${num}` : num
+       )
+    }
+
+    2번 zeroPlus 기능
+    {} 내부에 기능이 존재하고, 존재하는 기능의 결과를 삼항연산자를 이용해서 결과 반환하여 전달
+    전달반환하는 return() 이 생략되서 에러 발생
+    const zeroPlus = (num) => {  num < 10 ? `0${num}` : num }
+
+
+    3번 zeroPlus 기능
+    {} 작성을 생략하고 바로 return() 반환하는 형태로 작성으로 문제가 없음
+    const zeroPlus = (num) => ( num < 10 ? `0${num}` : num )
+    * */
+    const zeroPlus = (num) => {
+       return(
+        num < 10 ? `0${num}` : num
+       )
+    };
+
+    // 인증키와 관련된 백엔드 기능을 수행하고, 수행한 결과를 표기 하기 위하여
+    // 백엔드가 실행되고, 실행된 결과를 res.status 형태로 반환하기 전까지 js 하위기능 잠시 멈춤 처리
+    const sendAuthKey = async  () => {
+        // 기존 인증실패해서 0분 0초인 상태를 4분 59초 형태로 변환하기
+        clearInterval(timerRef.current);
+        setTimer({min:4, sec:59, active:false});
+        // 백엔드 응답 결과를 res 라는 변수이름에 담아두기
+       const res =  await  axios.post('/api/email/signup',
+                            formData.memberEmail, // form 데이터에서 email 전달
+                    {
+                        headers: {'Content-Type': 'application/json'} // 글자형태로 전달설정
+                    }
+        );
+       if(res.data == 1){
+           setMessage(prev => ({...prev,authKey: '05:00'}));
+           setTimer({min:4, sec:59, active: true});
+           alert('인증번호가 발송되었습니다.');
+       } else {
+           alert('인증번호 발송 중 오류가 발생했습니다.');
+       }
+    }
+
+
+
+
+
+
+
+
+
+
+
     // js 기능 추가
     /*
     동기   : 순차적으로 진행 은행 번호표 와 같이 순서대로.. 진행
