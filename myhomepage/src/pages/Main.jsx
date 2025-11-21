@@ -72,20 +72,37 @@ const fetchProducts = async () => {
     return(
     <div className="page-container">
         <h1>메인 페이지</h1>
-        <p> {formattedDate} 인기글 목록</p>
+        <p className="main-date">{formattedDate}</p>
 
-        <ul >
-                {/*
-                html 내부에서 {} 는
-                자바스크립트에서 선언한
-                변수이름 상수이름 기능구현을 작성
-                */}
-                {boards.map((b => (
-                    <li key={b.id}> {b.title}</li>
-                )
-                ))}
+        <section className="main-section">
+            <div className="section-header">
+                <h2>인기글</h2>
+                <button
+                    onClick={() => navigate('/board')}
+                    className="view-more-btn">
+                    더보기 →
+                </button>
+            </div>
 
-        </ul>
+            {boards.length > 0 ?(
+                <ul className="board-list">
+                    {boards.map((board) => (
+                        <li key={board.id}
+                            className="board-item"
+                            onClick={() => handleBoardClick(board.id)}
+                        >
+                            <span className="board-title">{board.title}</span>
+                            <div className="board-meta">
+                                <span className="board-author">{board.writer}</span>
+                                <span className="board-views">{board.views}</span>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            ): (
+                <p className="no-data">인기글이 없습니다.</p>
+            )}
+        </section>
 
 
     </div>
