@@ -103,7 +103,45 @@ const fetchProducts = async () => {
                 <p className="no-data">인기글이 없습니다.</p>
             )}
         </section>
+        <section className="main-section">
+            <div className="section-header">
+                <h2>추천 상품</h2>
+                <button
+                    onClick={() => navigate('/products')}
+                    className="view-more-btn">
+                    더보기 →
+                </button>
+            </div>
 
+            {products.length > 0 ?(
+                <ul className="main-product-grid">
+                    {products.map((p) => (
+                        <li key={p.id}
+                            className="main-product-card"
+                            onClick={() => handleProductClick(p.id)}
+                        >
+                           
+                            <div className="main-product-image">
+                                {p.imageUrl ?(
+                                    <img src={p.imageUrl} alt={p.productName}
+                                    onError={(e) =>{
+                                        e.target.onerror=null;
+                                        e.target.src="상품이 존재하지 않을 경우 기본 이미지 url 작성"
+                                    }}
+                                    />
+                                ):(
+                                    <div className="no-image">
+                                        <span>이미지 없음</span>
+                                    </div>
+                                )}
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            ): (
+                <p className="no-data">인기글이 없습니다.</p>
+            )}
+        </section>
 
     </div>
     )
