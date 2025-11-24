@@ -5,7 +5,6 @@
 // 기능을 나눌 때 여러 ui 태그에서 반복적으로 사용하는 기능인가?
 
 // 기태 : 로딩 기능
-
 // ========== 로딩 관련 함수 ==========
 export  const renderLoading = (message = '로딩중') => {
     return(
@@ -76,6 +75,80 @@ export  const goBack = (navigate, confirmMessage = null) => {
 
 
 // 유성 : fetchProduct
+// ========== API 데이터 페칭 관련 함수 ==========
+const API_URL = 'http://localhost:8085'
+export  const API_URLS = {
+    AUTH :`${API_URL}/api/auth`,
+    BOARD :`${API_URL}/api/board`,
+    PRODUCT :`${API_URL}/api/product`,
+    EMAIL :`${API_URL}/api/email`
+}
+export  const fetchAllProducts= async (axios, setProducts, setLoading= null) => {
+    try{
+        const res = await axios.get(`${API_URLS.PRODUCT}/all`);
+        setProducts(res.data);
+    } catch (error) {
+        alert("데이터를 가져올 수  없습니다.");
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+export  const fetchProductDetail= async (axios, id, setProduct, navigate, setLoading= null) => {
+    try{
+        const res = await axios.get(`${API_URLS.PRODUCT}/${id}`);
+        setProduct(res.data);
+    } catch (error) {
+        alert("상품 정보를 불러올 수 없습니다.");
+        navigate("/products"); // App.js 에서 Route 내부에 작성한 프론트엔드 게시물 전체보는 경로 설정
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+export  const fetchAllBoards = async (axios, setBoards, setLoading= null) => {
+    try{
+    } catch (error) {
+        alert("데이터를 가져올 수  없습니다.");
+    } finally {        const res = await axios.get(`${API_URLS.BOARD}/all`);
+        setBoards(res.data);
+
+        if(setLoading) setLoading(false);
+    }
+}
+
+export  const fetchAllPopularBoards = async (axios, setBoards, setLoading= null) => {
+    try{
+        const res = await axios.get(`${API_URLS.BOARD}/popular`);
+        setBoards(res.data);
+    } catch (error) {
+        alert("데이터를 가져올 수  없습니다.");
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+
+
+
+export  const fetchBoardDetail= async (axios, id, setBoard, navigate, setLoading= null) => {
+    try{
+        const res = await axios.get(`${API_URLS.BOARD}/${id}`);
+        setBoard(res.data);
+    } catch (error) {
+        alert("게시물 정보를 불러올 수 없습니다.");
+        navigate("/board"); // App.js 에서 Route 내부에 작성한 프론트엔드 게시물 전체보는 경로 설정
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+
 // 세원 : 날짜포멧팅
 // 윤선 : 가격포멧팅
 // 형빈 : 카테고리
+
+
+
+
+
+
+
+
+
