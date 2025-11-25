@@ -5,7 +5,7 @@ import Board from "./pages/Board";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import MyPage from "./pages/MyPage";
-import Write from "./pages/Write";
+import BoardWrite from "./pages/BoardWrite";
 import './App.css';
 import BoardDetail from "./pages/BoardDetail";
 import {useAuth} from "./context/AuthContext";
@@ -70,7 +70,7 @@ function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/mypage" element={<MyPage />} />
-                <Route path="/write" element={<Write />} />
+                <Route path="/write" element={<BoardWrite />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/upload" element={<ProductUpload />} />

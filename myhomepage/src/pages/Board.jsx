@@ -10,21 +10,33 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {fetchAllBoards, goToPage} from "../context/scripts";
+import {fetchAllBoards, goToPage, renderLoading} from "../context/scripts";
 
 const Board = () => {
     const navigate = useNavigate();
     const [boards, setBoards] = useState([]);
+    // 데이터를 가져오기 전이기 때문에 로딩 활성화 상태로 설정
+    const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
-        fetchAllBoards(axios,setBoards);
+        // 백엔드 호출할 때 axios, 백엔드에서 res.data를 담아올 setBoards 변수이름만 전달, setLoading = true 형태로 전달
+        fetchAllBoards(axios,   setBoards, setLoading);
     }, []);
 
-    const handleIDClick = (id) => {
-        navigate(`/board/${id}`);
-    }
+    if(loading) return renderLoading('게시물 가져오는 중');
 
-    return (
+    /*
+    * 게시물이 하나도 존재하지 않을 경우
+    * 둘 중 편한 방법 사용
+    *
+    *  1. board 가 없는게 사실이라면 renderLoading 이용해서 상품을 찾을 수 없습니다. 표기
+    *
+    *  2. 삼항연산자를 이용해서 게시물의 length가 0 이하라면 false 에 renderLoading 표기 가능
+    *
+    *
+    * */
+        return (
         <div className="page-container">
             <div className="board-header">
                 <h1>게시판</h1>
@@ -69,8 +81,8 @@ const Board = () => {
                     */}
                     {boards .map((b) => (
                         <tr key={b.id}>
-                            <td onClick={() => handleIDClick(b.id)}>{b.id}</td>
-                            <td onClick={() => handleIDClick(b.id)}>{b.title}</td>
+                            <td onClick={() => goToPage(navigate, `/board/${b.id}`)}>{b.id}</td>
+                            <td onClick={() => goToPage(navigate, `/board/${b.id}`)}>{b.title}</td>
                             <td>{b.writer}</td>
                             <td>{b.viewCount}</td>
                             <td>{b.createdAt}</td> {/* 2025-11-07 11:38:18  -> 2025-11-07*/}
