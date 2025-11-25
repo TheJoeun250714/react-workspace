@@ -73,7 +73,22 @@ const MyPageEdit = () => {
     }
 
     const handleAddressSearch = () => {
+        new window.daum.Postcode({
+            oncomplete: function (data) {
+                var addr = '';
 
+                // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if( data.userSelectedType === 'R') { //사용자가 도로명 주소를 사용할 경우 Road
+                    addr = data.roadAddress;
+                } else { // === 'J' Jibun 을 선택했을 경우 지번주소를 가져온다.
+                    addr = data.jibunAddress;
+                }
+
+                document.getElementById('postcode').value = data.zonecode;
+                document.getElementById('address').value = addr;
+                document.getElementById("detailAddress").focus();
+            }
+        }).open();
     }
     // 게시물 작성, 수정, 상품 업로드 작성, 수정, 마이페이지 수정 동시 사용
     // 인자값 msg, navigate path
