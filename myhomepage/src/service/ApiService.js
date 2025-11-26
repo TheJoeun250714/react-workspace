@@ -43,7 +43,7 @@ export const fetchSignup = async (axios, formData) => {
         memberPassword: formData.memberPw,
     }
     try {
-        const res = await axios.post("/api/auth/signup", signupData);
+        const res = await axios.post(API_URLS.AUTH + "/signup", signupData);
         if (res.data === "success" || res.status === 200) {
             console.log("res.data   : ", res.data);
             console.log("res.status : ", res.status);

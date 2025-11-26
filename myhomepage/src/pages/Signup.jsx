@@ -120,7 +120,7 @@ const Signup = () => {
         */
         //console.log("응답 데이터 : ",res.data);
         //console.log("응답 상태 : ", res.status);
-       if(res.data && res.data !== null){
+       if(res.data === 1 ){
            setMessage(prev => ({...prev,authKey: '05:00'}));
            setTimer({min:4, sec:59, active: true});
            alert('인증번호가 발송되었습니다.');
@@ -149,6 +149,8 @@ const Signup = () => {
         }
 
         try { //프론트엔드에서 백엔드로 연결 시도
+            console.log("이메일 : ",formData.memberEmail);
+            console.log("인증키 : ",formData.authKey);
             const r = await axios.post(
                 '/api/email/checkAuthKey', // 1번 데이터 보낼 백엔드 api endPoint 작성
                 {                        // 2번 어떤 데이터를 백엔드에 어떤 명칭으로 전달할 것인지 작성
@@ -161,7 +163,7 @@ const Signup = () => {
             // 백엔드에서 특정데이터의 성공유무 확인일뿐,
             // 프론트엔드와 백엔드가 제대로 연결되어있는지 확인할 수 없다.
             // 과제 : if (r.data && r.data !== null) { ->   응답코드 1일 경우에만 인증되도록 수정
-            if (r.data && r.data !== null) {
+            if (r.data.success === true) {
                 clearInterval(timerRef.current);
                 setTimer({min:0,sec: 0,active: false});
                 setMessage(prev => ({...prev, authKey: '인증되었습니다.'}));
@@ -172,6 +174,7 @@ const Signup = () => {
                 alert('인증번호가 일치하지 않습니다.');
             }
         } catch (err) { // 백엔드연결시도를 실패했을경우
+            console.log("인증확인실패 : ",err);
             alert("인증 확인 중 서버에 연결되지 않는 오류가 발생했습니다.");
 
         }
