@@ -38,21 +38,64 @@ const MyPageEdit = () => {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // set 해서 값을 추가하면서 추가된 값이 일치하는가 확인
+    // handleInputChange 내부에 formData 활용
+    // formData에 내장된 새비밀번호와 비밀번호 확인이 일치하는지 체크
+    const handleCheckChange = (e) => {
+        const {name, value} = e.target;
+        // const {name, value} = e.target;
+        handleInputChange(e, setFormData);
+
+        // 새 비밀번호 입력 시 -> 비밀번호 확인과 비료
+        if(name === "newPassword") {
+            const isMatch = value === formData.confirmPassword;
+
+            setValidation(prev => ({
+                ...prev,
+                confirmPassword: isMatch
+            }));
+
+            setMessages(prev => ({
+                ...prev,
+                confirmPassword: formData.confirmPassword
+                ?(isMatch ? "비밀번호가 일치합니다.":"비밀번호가 일치하지 않습니다.")
+                 : ""
+            }));
+        }
+        if(name === "confirmPassword") {
+            const isMatch = value === formData.newPassword;
+
+            setValidation(prev => ({
+                ...prev,
+                confirmPassword: isMatch
+            }));
+
+            setMessages(prev => ({
+                ...prev,
+                confirmPassword: value
+                ?(isMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다.")
+                : ""
+            }));
+        }
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // 단순히 값이 존재하는지 확인 값이 존재하면 okokokokookokok!!!!!!!
+        // d
         if(formData.currentPassword || formData.newPassword || formData.confirmPassword) {
             if(!formData.currentPassword) {
                 alert("현재 비밀번호를 입력해주세요.");
                 return;
             }
-            if(!validation.newPassword) {
-                alert("비밀번호 형식이 올바르지 않습니다.");
+            if(!validation.newPassword ) {
+                alert("새 비밀번호를 입력해주세요.");
                 return;
             }
 
             if(!validation.confirmPassword) {
-                alert("비밀번호가 일치하지 않습니다.");
+                alert("비밀번호 확인을 입력해주세요.");
                 return;
             }
         }
@@ -66,10 +109,7 @@ const MyPageEdit = () => {
         },1000);
     }
 
-    const handleCheckChange = (e) => {
-       // const {name, value} = e.target;
-        handleInputChange(e, setFormData);
-    }
+
 
     const handleAddressSearch = () => {
         new window.daum.Postcode({
