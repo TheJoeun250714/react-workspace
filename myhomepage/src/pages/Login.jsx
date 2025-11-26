@@ -7,6 +7,7 @@ import {handleInputChange} from "../context/scripts";
 
 // 게시물이나, 회원가입에서 사용하는 방식
 // 단순 로그인과 비밀번호 찾기, 아이디 찾기에서는 지양하는 방식
+/*
 const LoginHandleChangeVersion = () => {
     /*
         const handleChange = (e) => {     const {name, value} = e.target;    }
@@ -14,7 +15,7 @@ const LoginHandleChangeVersion = () => {
         const [memberEmail, setMemberEmail] = useState('');
         const [memberPassword, setMemberPassword] = useState('');
         필요하지 않음
-    */
+    * /
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState( {
@@ -25,7 +26,7 @@ const LoginHandleChangeVersion = () => {
     /**
      * value onChang 에러 해결
      * 제출 방지, useEffect 활용해서 backend api post 형태로 연동
-     */
+     * /
     const handleSubmit = () => {
 
     }
@@ -72,36 +73,36 @@ const LoginHandleChangeVersion = () => {
         </div>
     );
 };
-
+*/
 const Login = () => {
     const navigate = useNavigate();
     const {loginFn} = useAuth(); // 변수명칭 뿐만 아니라 기능 명칭 또한 {} 로 형태로 가져와서 사용
    // const [memberEmail, setMemberEmail] = useState('');
    // const [memberPassword, setMemberPassword] = useState('');
-    const {formData, setFormdata} = useState({
+    const [formData, setFormData] = useState({
         memberEmail : '',
         memberPassword : '',
     })
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => {
-        // setFormdata로 변경해서 전달하기 생각만
-        handleInputChange(e,setFormdata);
+    const handleCheckChange = (e) => {
+        // setFormData 변경해서 전달하기 생각만
+        handleInputChange(e, setFormData);
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setMessage(''); //이전 오류 메세지 초기화
 
-        if(!formData.memberEmail || !formData.mmemberPassword) {
+        if(!formData.memberEmail || !formData.memberPassword) {
             setMessage('이메일과 비밀번호를 입력하세요.');
             return; // 돌려보내기
         }
         // console.log로 로그인 결과 유무를 확인하고자 할 경우
         // const a = loginFn(memberEmail,memberPassword);
         // console.log("로그인 결과 : ", a);
-        loginFn(formData.mmemberEmail, formData.mmemberPassword)
+        loginFn(formData.memberEmail, formData.memberPassword)
             .then(result => {
                 if(result.success){
                     alert("로그인 성공하였습니다.");
@@ -147,9 +148,10 @@ const Login = () => {
                         <label>이메일
                             <input type="email"
                                    id="memberEmail"
+                                   name="memberEmail"
                                    placeholder="이메일을 입력하세요"
-                                   value={memberEmail}
-                                   onChange={handleChange}
+                                   value={formData.memberEmail}
+                                   onChange={handleCheckChange}
                             />
                         </label>
                     </div>
@@ -157,9 +159,10 @@ const Login = () => {
                         <label>비밀번호
                             <input type="password"
                                    id="memberPassword"
+                                   name="memberPassword"
                                    placeholder="비밀번호 입력하세요"
-                                   value={memberPassword}
-                                   onChange={handleChange}
+                                   value={formData.memberPassword}
+                                   onChange={handleCheckChange}
                             />
                         </label>
                     </div>

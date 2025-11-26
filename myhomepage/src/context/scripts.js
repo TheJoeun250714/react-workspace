@@ -265,8 +265,12 @@ export const formatPrice = (price) => {
  * @logic p =>({...p, [name]:value}  기존에 존재하던 formData 를 p 변수이름 내부에 그대로 복제하여 담아둔 후
  * 변화가 감지된 키의 데이터를 p 변수에 추가하고, 키 명칭이 존재한다면 데이터 수정, 키 명칭이 존재하지 않다는다면 키:데이터 추가
  * 변화된 p 전체 데이터는 setter 를 이용해서 formData 에 저장
+ * @id         js 상태관리 할 때 주로 사용
+ * @name       백엔드로 데이터를 주고 받을 때 사용
+ * @className  스타일 세팅 사용
  */
 export const handleInputChange = (e, setFormData) => {
+    // id 키 명칭에 해당하는 데이터를 갖고오길 원한다면 name 대신 id 활용
     const { name, value } = e.target;
     setFormData(p => ({
         ...p,

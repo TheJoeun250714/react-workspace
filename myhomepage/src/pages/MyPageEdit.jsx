@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useAuth} from "../context/AuthContext";
 import {handleChange, handleInputChange} from "../context/scripts";
 /*
@@ -8,7 +8,11 @@ import {handleChange, handleInputChange} from "../context/scripts";
 const MyPageEdit = () => {
     const navigate = useNavigate();
     const {user, isAuthenticated} = useAuth();
-
+    useEffect(() => {
+        if(!isAuthenticated) {
+            navigate("/login");
+        }
+    },[]);
     const [formData, setFormData] = useState({
         memberName: '',
         memberEmail: '',
@@ -147,7 +151,7 @@ const MyPageEdit = () => {
                 </label>
                 <label>
                     <span className="required">*</span>현재 비밀번호
-                    <input type="text"
+                    <input type="password"
                            name="currentPassword"
                            value={formData.currentPassword}
                            onChange={handleCheckChange}
@@ -156,7 +160,7 @@ const MyPageEdit = () => {
                 </label>
                 <label>
                     <span className="required">*</span>새 비밀번호
-                    <input type="text"
+                    <input type="password"
                            name="newPassword"
                            value={formData.newPassword}
                            onChange={handleCheckChange}
@@ -165,7 +169,7 @@ const MyPageEdit = () => {
                 </label>
                 <label>
                     <span className="required">*</span>새 비밀번호 확인
-                    <input type="text"
+                    <input type="password"
                            name="confirmPassword"
                            value={formData.confirmPassword}
                            onChange={handleCheckChange}
