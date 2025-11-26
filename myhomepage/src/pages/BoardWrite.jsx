@@ -47,7 +47,9 @@ const BoardWrite = () => {
                 writer:user?.memberEmail
             }, navigate);
     };
-    //
+    //export const formatPrice = (price) => {
+    //     return new Intl.NumberFormat("ko-KR").format(price);
+    // }
 
     const handleChange = (e) => {
        handleInputChange(e, setFormData);

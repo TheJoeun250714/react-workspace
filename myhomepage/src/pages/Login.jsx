@@ -76,28 +76,32 @@ const LoginHandleChangeVersion = () => {
 const Login = () => {
     const navigate = useNavigate();
     const {loginFn} = useAuth(); // 변수명칭 뿐만 아니라 기능 명칭 또한 {} 로 형태로 가져와서 사용
-    const [memberEmail, setMemberEmail] = useState('');
-    const [memberPassword, setMemberPassword] = useState('');
+   // const [memberEmail, setMemberEmail] = useState('');
+   // const [memberPassword, setMemberPassword] = useState('');
+    const {formData, setFormdata} = useState({
+        memberEmail : '',
+        memberPassword : '',
+    })
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         // setFormdata로 변경해서 전달하기 생각만
-        handleInputChange(e);
+        handleInputChange(e,setFormdata);
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setMessage(''); //이전 오류 메세지 초기화
 
-        if(!memberEmail || !memberPassword) {
+        if(!formData.memberEmail || !formData.mmemberPassword) {
             setMessage('이메일과 비밀번호를 입력하세요.');
             return; // 돌려보내기
         }
         // console.log로 로그인 결과 유무를 확인하고자 할 경우
         // const a = loginFn(memberEmail,memberPassword);
         // console.log("로그인 결과 : ", a);
-        loginFn(memberEmail,memberPassword)
+        loginFn(formData.mmemberEmail, formData.mmemberPassword)
             .then(result => {
                 if(result.success){
                     alert("로그인 성공하였습니다.");
@@ -145,7 +149,7 @@ const Login = () => {
                                    id="memberEmail"
                                    placeholder="이메일을 입력하세요"
                                    value={memberEmail}
-                                   onChange={(e) => setMemberEmail((e.target.value))}
+                                   onChange={handleChange}
                             />
                         </label>
                     </div>
@@ -155,7 +159,7 @@ const Login = () => {
                                    id="memberPassword"
                                    placeholder="비밀번호 입력하세요"
                                    value={memberPassword}
-                                   onChange={(e) => setMemberPassword((e.target.value))}
+                                   onChange={handleChange}
                             />
                         </label>
                     </div>
