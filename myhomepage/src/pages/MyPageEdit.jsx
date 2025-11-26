@@ -1,7 +1,9 @@
 import {useNavigate} from "react-router-dom";
 import {useContext, useEffect, useState} from "react";
 import {useAuth} from "../context/AuthContext";
-import {handleChange, handleInputChange} from "../context/scripts";
+import {handleChange, handleInputChange} from "../service/commonService";
+import {fetchMypageEdit} from "../service/ApiService";
+import axios from "axios";
 /*
 과제 1: 새로 작성한 비밀번호와 비밀번호 확인이 일치하는지 여부 기능 완성
 */
@@ -46,8 +48,14 @@ const MyPageEdit = () => {
         // const {name, value} = e.target;
         handleInputChange(e, setFormData);
 
-        // 새 비밀번호 입력 시 -> 비밀번호 확인과 비료
-        if(name === "newPassword") {
+        /*
+         * 새 비밀번호 입력하고 비밀번호 확인 까지 입력
+         * 그 후에 새 비밀번호를 변경할 수 있는 가능성이 있기 때문에
+         * 새 비밀번호 = 비밀번호확인 일치하는지 체크 후
+         * 새 비밀번호 변경하면 비밀번호 확인까지 같이 변경할 수 있도록 세팅
+         */
+        // 새 비밀번호 입력 시 -> 비밀번호 확인과 비교
+        if (name === "newPassword") {
             const isMatch = value === formData.confirmPassword;
 
             setValidation(prev => ({
@@ -58,11 +66,11 @@ const MyPageEdit = () => {
             setMessages(prev => ({
                 ...prev,
                 confirmPassword: formData.confirmPassword
-                ?(isMatch ? "비밀번호가 일치합니다.":"비밀번호가 일치하지 않습니다.")
-                 : ""
+                    ? (isMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다.")
+                    : ""
             }));
         }
-        if(name === "confirmPassword") {
+        if (name === "confirmPassword") {
             const isMatch = value === formData.newPassword;
 
             setValidation(prev => ({
@@ -73,12 +81,12 @@ const MyPageEdit = () => {
             setMessages(prev => ({
                 ...prev,
                 confirmPassword: value
-                ?(isMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다.")
-                : ""
+                    ? (isMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다.")
+                    : ""
             }));
         }
 
-
+    }
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -98,15 +106,9 @@ const MyPageEdit = () => {
                 alert("비밀번호 확인을 입력해주세요.");
                 return;
             }
+
         }
-
-        setIsSubmitting(true);
-
-        setTimeout( () => {
-            setIsSubmitting(false);
-            alert("회원정보가 수정되었습니다.");
-            navigate("/mypage");
-        },1000);
+    fetchMypageEdit(axios, formData, navigate, setIsSubmitting);
     }
 
 

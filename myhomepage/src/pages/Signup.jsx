@@ -2,7 +2,8 @@
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {clear} from "@testing-library/user-event/dist/clear";
-import {handleInputChange} from "../context/scripts";
+import {handleInputChange} from "../service/commonService";
+import {fetchSignup} from "../service/ApiService";
 
 const Signup = () => {
 
@@ -208,31 +209,8 @@ const Signup = () => {
     * */
     const handleSubmit = async (e) => {
         // 제출관련 기능 설정
-        e.preventDefault(); // 일시정시 제출상태
-        // 필수 항목 체크
-        if(!formData.memberName) {
-            alert('이름을 입력해주세요.')
-            return; // 돌려보내기 하위기능 작동x
-        }
-        // DB에 저장할 데이터만 전송
-        // body 형태로 전달하기
-        // requestBody requestParam
-        //    body         header
-        const signupData = {
-            memberName:formData.memberName,
-            memberEmail:formData.memberEmail,
-            memberPassword:formData.memberPw,
-        }
-        const res = await axios.post("/api/auth/signup",signupData);
-        if(res.data === "success" || res.status === 200) {
-            console.log("res.data   : ",res.data);
-            console.log("res.status : ",res.status);
-            alert('회원가입이 완료되었습니다.');
-            window.location.href="/";
-        }  else if(res.data === "duplicate" )
-             alert("이미 가입된 이메일 입니다.");
-           else
-            alert("회원가입에 실패하였습니다.");
+        e.preventDefault();
+        await fetchSignup(axios,formData);
 
 
         // axios.post
