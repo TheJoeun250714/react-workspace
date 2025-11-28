@@ -2,14 +2,12 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import {useAuth} from "../context/AuthContext";
 import {handleInputChange} from "../service/commonService";
-import {fetchMypageEdit} from "../service/ApiService";
+import {fetchMypageEdit, fetchMypageEditWithProfile} from "../service/ApiService";
 import axios from "axios";
-/*
-과제 1: 새로 작성한 비밀번호와 비밀번호 확인이 일치하는지 여부 기능 완성
-*/
+
 const MyPageEdit = () => {
     const navigate = useNavigate();
-    const {user, isAuthenticated} = useAuth();
+    const {user, isAuthenticated , updateUser} = useAuth();
     // 페이지 리랜더링이 될 때 현재 데이터를 그대로 유지하기위해 사용
     // 새로고침되어도 초기값으로 돌아가는 것이 아니라 현재 상태를 그대로 유지
     const fileInputRef = useRef(null);
@@ -115,6 +113,7 @@ const MyPageEdit = () => {
 
         }
     fetchMypageEdit(axios, formData, navigate, setIsSubmitting);
+    // fetchMypageEditWithProfile(axios, formData, profileFile,navigate, setIsSubmitting);
     }
     const handleAddressSearch = () => {
         new window.daum.Postcode({
@@ -157,7 +156,6 @@ const MyPageEdit = () => {
     // 프로필 이미지 클릭 시 파일 선택
     const handleProfileClick = () => {
         fileInputRef.current?.click();
-        // 새로고침하여, 프로필이미지 초기화 되는 것이 아니라, 현재상태를 유지한 채로 클릭을 진행한다.
     }
     // 프로필 이미지 파일 선택
     const handleProfileChange = async  (e) => {
@@ -189,10 +187,10 @@ const MyPageEdit = () => {
     const uploadProfileImage = async (file) => {
         setUploading(true);
         try {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("memberEmail", user.memberEmail);
-            const res = await  axios.post('/api/auth/profile-image', formData, {
+            const uploadFormData = new FormData();
+            uploadFormData.append("file", file);
+            uploadFormData.append("memberEmail", user.memberEmail);
+            const res = await  axios.post('/api/auth/profile-image', uploadFormData, {
                 headers: {
                     'Content-Type':'multipart/form-data'
                 }
@@ -201,11 +199,18 @@ const MyPageEdit = () => {
             if(res.data.success === true) {
                 alert("프로필 이미지가 업데이트 되었습니다.");
                 setProfileImage(res.data.imageUrl);
-                //updateUser(useAuth 또한 업데이트 진행)
+                
+                // 세션에서 최신 사용자 정보 가져오기
+                const sessionRes = await axios.get("/api/auth/check", {
+                    withCredentials: true
+                });
+                
+                if(sessionRes.data.user) {
+                    updateUser(sessionRes.data.user); //전역 user 상태 업데이트
+                }
             }
         }catch (error) {
             alert(error);
-            // 실패 시 원래 이미지로 복구
             setProfileImage(user?.memberProfileImage ||'/static/img/default-profile.svg');
         } finally {
             setUploading(false);
@@ -231,6 +236,7 @@ const MyPageEdit = () => {
                            onChange={handleProfileChange}
                            accept="image/*"
                            style={{ display: 'none' }}
+                           multiple
                     />
                     <span className="form-hint">이미지를 클릭하여 변경할 수 있습니다.(최대 5MB)</span>
                 </div>
