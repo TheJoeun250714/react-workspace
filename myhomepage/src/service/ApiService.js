@@ -79,7 +79,7 @@ export const fetchLoginCheck = (axios, setUser, setLoading) => {
         .finally(() => setLoading(false))
 }
 
-export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
+export const fetchMypageEdit = async (axios, formData, navigate, setIsSubmitting) => {
     // 수정내용 키:데이터를 모두 담아갈 변수이름
     const updateData = {
         memberName: formData.memberName,
@@ -90,10 +90,10 @@ export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
         currentPassword: formData.currentPassword || null,
     }
     try {
-        const res = axios.put(API_URLS.AUTH + "/update", updateData);
-        if (res.data === "success" || res.status === 200) {
+        const res = await axios.put(API_URLS.AUTH + "/update", updateData);
+        if (res.data.success === true) {
             alert("회원정보가 수정되었습니다.")
-        } else if(res.data ==="wrongPassword"){
+        } else if(res.data.message === "wrongPassword"){
             alert("현재 비밀번호가 일치하지 않습니다.")
         } else {
             alert("회원정보 수정에  실패했습니다.")
@@ -105,7 +105,7 @@ export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
     }
 }
 
-export const fetchMypageEditWithProfile = (axios, formData, profileFile, navigate, setIsSubmitting) => {
+export const fetchMypageEditWithProfile = async (axios, formData, profileFile, navigate, setIsSubmitting) => {
     // 수정내용 키:데이터를 모두 담아갈 변수이름
     const updateData = {
         memberName: formData.memberName,
@@ -117,17 +117,15 @@ export const fetchMypageEditWithProfile = (axios, formData, profileFile, navigat
         memberProfileImage: profileFile,
     }
     try {
-        const res = axios.put(API_URLS.AUTH + "/update", updateData,{
+        const res = await axios.put(API_URLS.AUTH + "/update", updateData,{
             headers: {
                 'Content-Type':'multipart/form-data'
             },
             withCredentials: true
         });
-        if (res.data === "success" || res.status === 200) {
+        if (res.data.success === true) {
             alert("회원정보가 수정되었습니다.")
-        } else if(res.data ==="wrongPassword"){
-            alert("현재 비밀번호가 일치하지 않습니다.")
-        } else {
+        }  else {
             alert("회원정보 수정에  실패했습니다.")
         }
     } catch (err) {
