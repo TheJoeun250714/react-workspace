@@ -30,7 +30,6 @@ const Signup = () => {
         password : '영어, 숫자 6~20글자 사이로 입력해주세요.',
         fullname : "한글 2~5자 작성"
     })
-
     const [checkObj, setCheckObj] = useState({
         memberName:false,
         memberEmail:false,
@@ -38,12 +37,15 @@ const Signup = () => {
         memberPwConfirm:false,
         authKey:false
     })
-
     const [timer, setTimer] = useState({
         min:4,
         sec:59,
         active:false
     });
+    const [profileImage, setProfileImage] = useState(null);
+    const [profilePreview, setProfilePreview] = useState("/static/img/profile/default_profile_image.svg");
+
+    const fileInputRef = useRef(null);
     const timerRef =useRef(null);
 
 
@@ -71,8 +73,6 @@ const Signup = () => {
         }
         return () => clearInterval(timerRef.current);
     }, [timer.active]);
-
-
     /*
     handleSubmit handleChange 의 경우 특정 값을 반환하는 것이 아니라
     기능을 수행하는 목적을 가진 메서드
@@ -102,7 +102,6 @@ const Signup = () => {
         num < 10 ? `0${num}` : num
        )
     };
-
     // 인증키와 관련된 백엔드 기능을 수행하고, 수행한 결과를 표기 하기 위하여
     // 백엔드가 실행되고, 실행된 결과를 res.status 형태로 반환하기 전까지 js 하위기능 잠시 멈춤 처리
     const sendAuthKey = async  () => {
@@ -139,7 +138,6 @@ const Signup = () => {
            alert('인증번호 발송 중 오류가 발생했습니다.');
        }
     }
-
     // async = 중간에 기다림이 있어야하는 기능입니다.
     // 만약에 await 가 작성되어 있는 구문은 백엔드나 다른 api에서 return 결과가 도착할 때 까지
     // 하위 js 코드를 실행하지 않고 잠시 기다립니다.
@@ -185,15 +183,6 @@ const Signup = () => {
             alert("인증 확인 중 서버에 연결되지 않는 오류가 발생했습니다.");
         }
     }
-
-
-
-
-
-
-
-
-
     // js 기능 추가
     /*
     동기   : 순차적으로 진행 은행 번호표 와 같이 순서대로.. 진행
@@ -217,7 +206,8 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         // 제출관련 기능 설정
         e.preventDefault();
-        await fetchSignup(axios,formData);
+        // 자바스크립트는 매개변수 개수와 인자값의 개수를 모두 동일하게 맞춰야하나
+        await fetchSignup(axios,formData, pofileImage);
 
 
         // axios.post
@@ -243,10 +233,75 @@ const Signup = () => {
         handleInputChange(e,setFormData);
         // 개발자가 원하는 정규식이나, 입력형식에 일치하게 작성했는지 체크
     }
+    const handleProfileImageChange = (e) => {
+        // e.target.value = html 내부에 클라이언트가 작성하거나 선택한 text 글자형태의 값을 js로 가져와서 사용
+        // 맨 첫 번째 파일은 index 0번부터 저장
+        // 우리는 프로필 사진 1장을 가져올 것이기 때문에 e.target.files[0]
+        const html에서가져온이미지파일 = e.target.files[0];
+        if(html에서가져온이미지파일) {
+            //파일 유효성 검사
+            if(!html에서가져온이미지파일.startsWith("image/")){ // image 확장자로 되어있는 파일이 아닌게 사실이라면
+                alert('이미지 파일만 업로드 가능합니다.');
+                return; //저장되지 못하도록 돌려보내기
+            }
+
+            if(html에서가져온이미지파일.size > 5 * 1024 * 1024) {
+                alert("파일 크기는 5MB를 초과할 수 없습니다.");
+                return;
+            }
+            setProfileImage(html에서가져온이미지파일); //아무 문제 없으면 profileImage 변수에 가져온파일 데이터 setter 이용해서 저장
+
+            // 미리보기 이미지 생성
+            const reader = new FileReader();
+            reader.onloadend = (e) => {
+                setProfilePreview(reader.result); //이미지 읽은 데이터에 대한 결과를 미리보기 변수에 setter 이용해서 저장
+            };
+            reader.readAsDataURL(html에서가져온이미지파일);
+
+        }
+    };
+
+    const handleRemoveProfileImage = () => {
+        setProfileImage(null);
+        setProfilePreview("/static/img/profile/default_profile_image.svg");
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ""; //현재 새로고침 하지 않아도 저장해놓는 파일 데이터 지우기
+        }
+
+    }
     return(
         <div className="page-container">
 
             <form onSubmit={handleSubmit}>
+                <div className="profile-image-container">
+                    <label htmlFor="memberProfile">
+                        프로필 이미지
+                    </label>
+                    <img src={profilePreview}
+                         alt="프로필 미리보기"
+                         className="profile-image"
+                    />
+                    <div className="profile-image-overlay">이미지 선택</div>
+                    <input type="file"
+                           accept="image/*"
+                           onChange={handleProfileImageChange}
+                           id="memberProfile"
+                           name="memberProfile"
+                           ref={fileInputRef}
+                    />
+
+                    {profileImage && (
+                        <button type="button"
+                                className="btn-reset"
+                                onClick={handleRemoveProfileImage}
+                        >이미지 제거</button>
+                    )}
+                    <span className="form-hint">
+                        * 이미지를 선택하지 않으면 기본 프로필 이미지가 설정됩니다.
+                    </span>
+                </div>
+
+
 
                 <label htmlFor="memberEmail">
                     <span className="required">*</span> 아이디(이메일)

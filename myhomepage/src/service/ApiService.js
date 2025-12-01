@@ -30,7 +30,7 @@ export const API_URLS = {
 // 마이페이지 수정      = fetchMypageEdit
 
 
-export const fetchSignup = async (axios, formData) => {
+export const fetchSignup = async (axios, formData, profileImage) => {
     // 필수 항목 체크
     if (!formData.memberName) {
         alert('이름을 입력해주세요.')
@@ -45,8 +45,15 @@ export const fetchSignup = async (axios, formData) => {
         memberEmail: formData.memberEmail,
         memberPassword: formData.memberPw,
     }
+    if(profileImage){
+        signupData.append('profileImage', profileImage)
+    }
     try {
-        const res = await axios.post(API_URLS.AUTH + "/signup", signupData);
+        const res = await axios.post(API_URLS.AUTH + "/signup", signupData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
         if (res.data === "success" || res.status === 200) {
             console.log("res.data   : ", res.data);
             console.log("res.status : ", res.status);
