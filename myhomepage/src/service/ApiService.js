@@ -91,8 +91,10 @@ export const fetchMypageEdit = async (axios, formData, navigate, setIsSubmitting
     const updateData = {
         memberName: formData.memberName,
         memberEmail: formData.memberEmail,
+     //   memberPostCode: formData.memberPostCode,
+        memberAddress: formData.memberAddress,
+     //   memberDetailAddress: formData.memberDetailAddress ,
         memberPhone: formData.memberPhone,
-        memberAddress: formData.memberAddress + formData.memberDetailAddress,
         newPassword: formData.newPassword || null,
         currentPassword: formData.currentPassword || null,
     }

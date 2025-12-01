@@ -333,7 +333,7 @@ const MyPageEdit = () => {
                         <input type="text"
                                id="memberPostCode"
                                name="memberPostCode"
-                               value={formData.memberAddress}
+                               value={formData.memberPostCode}
                                placeholder="주소 검색을 클릭하세요"
                                onClick={handleAddressSearch}
                                readOnly
