@@ -207,7 +207,7 @@ const Signup = () => {
         // 제출관련 기능 설정
         e.preventDefault();
         // 자바스크립트는 매개변수 개수와 인자값의 개수를 모두 동일하게 맞춰야하나
-        await fetchSignup(axios,formData, pofileImage);
+        await fetchSignup(axios,formData, profileImage);
 
 
         // axios.post
@@ -240,7 +240,7 @@ const Signup = () => {
         const html에서가져온이미지파일 = e.target.files[0];
         if(html에서가져온이미지파일) {
             //파일 유효성 검사
-            if(!html에서가져온이미지파일.startsWith("image/")){ // image 확장자로 되어있는 파일이 아닌게 사실이라면
+            if(!html에서가져온이미지파일.type.startsWith("image/")){ // image 확장자로 되어있는 파일이 아닌게 사실이라면
                 alert('이미지 파일만 업로드 가능합니다.');
                 return; //저장되지 못하도록 돌려보내기
             }
@@ -273,21 +273,30 @@ const Signup = () => {
         <div className="page-container">
 
             <form onSubmit={handleSubmit}>
-                <div className="profile-image-container">
-                    <label htmlFor="memberProfile">
-                        프로필 이미지
-                    </label>
+                <div className="profile-image-section">
+                <label htmlFor="memberProfile">
+                    프로필 이미지
+                </label>
+                <div className="profile-image-container"
+                     onClick={() => fileInputRef.current?.click()}
+                >
+
                     <img src={profilePreview}
                          alt="프로필 미리보기"
                          className="profile-image"
                     />
-                    <div className="profile-image-overlay">이미지 선택</div>
+                    <div className="profile-image-overlay">
+                        이미지 선택
+                    </div>
+                </div>
                     <input type="file"
                            accept="image/*"
                            onChange={handleProfileImageChange}
                            id="memberProfile"
                            name="memberProfile"
+                           style={{display: 'none'}}
                            ref={fileInputRef}
+
                     />
 
                     {profileImage && (
