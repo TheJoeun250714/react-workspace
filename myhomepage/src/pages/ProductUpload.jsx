@@ -1,18 +1,11 @@
 import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import axios from "axios";
-import {handleInputChange} from "../service/commonService";
+import {handleChangeImage, handleInputChange} from "../service/commonService";
 
 // 상품 이미지 업로드 변경
 // profileImage -> imageUrl 을 이용해서 상품 업로드시 제품 미리보기
-{/*
-과제 1: 상품 업로드시 - isActive 를 선택하여 판매중 / 판매중지중 선택하여 업로드 가능하도록 설정
 
-과제 2: serviceImpl 에서 main.jpg로 저장되는 것이 아니라,
-        main - 본래이름 형태로 저장되게 코드 수정
-
-*/
-}
 const ProductUpload = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -49,49 +42,8 @@ const ProductUpload = () => {
     ]
 
 
-    const handleChangeImage = (e) => {
-        // type=file 은 이미지 이외에도 항시 1개 이상의 데이터를 가져온다.
-        // 가 기본 전제로 된 속성으로 multipart를 작성하지 않아
-        // input 에서 하나의 이미지만 가져온다 하더라도 항시 [0] 번째의
-        // 데이터를 가져온다로 작성해야함
-        const html에서가져온이미지첫번째파일 = e.target.files[0];
 
-        if (html에서가져온이미지첫번째파일) {
-            if (!html에서가져온이미지첫번째파일.type.startsWith('image/')) {
-                alert("이미지 파일만 업로드 가능합니다.");
-                e.target.value = ""; // 한 번더 안정적으로 input 내 데이터 제거
-                return;
-            }
 
-            // 파일 크기 검증 (예 : 5MB 제한)
-            const maxsize = 5 * 1024 * 1024;
-            if (html에서가져온이미지첫번째파일.size > maxsize) {
-                alert("파일 크기는 5MB 이하여야 합니다.");
-                e.target.value = "";
-                return;
-            }
-
-            // FileReader 라는 자바스크립트에 내장된 읽기 기능을 사용해서
-            // 파일 미리보기 생성
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                // FileReader를 만든 개발자가 target 한다음 value 나
-                // files[인덱스] 대신
-                // 가져온 것에 대한 결과라는 변수이름을 사용하여
-                // result 를 사용한다.
-                setPreviewImage(event.target.result);
-            };
-            // URL에 존재하는 데이터를 읽겠다. reader 에서
-            reader.readAsDataURL(html에서가져온이미지첫번째파일);
-
-            setImageFile(html에서가져온이미지첫번째파일);
-
-            setProduct(prev => ({
-                ...prev,
-                imageUrl: html에서가져온이미지첫번째파일
-            }))
-        }
-    }
 
     // input 창 display = none 처리
     // 상품미리보기가 null 값일 경우 보여주지 않기 세팅
@@ -146,21 +98,15 @@ const ProductUpload = () => {
 
          */
         setLoading(true);
-        // 백엔드 연결 시도
         try {
             const uploadFormdata = new FormData();
-
             // product 에서 imageUrl 을 제외한 나머지 데이터만 productData 변수이름 내에 데이터 전달
             const {imageUrl, ...productData} = product;
-
-            // product 정보를 JSON Blob 으로 추가
             const productBlob = new Blob(
                 [JSON.stringify(productData)],
                 {type: 'application/json'}
             );
             uploadFormdata.append('product', productBlob);
-
-            // 이미지 파일이 있으면 추가
             if (imageFile) {
                 uploadFormdata.append('imageFile', imageFile);
             }
@@ -345,7 +291,7 @@ const ProductUpload = () => {
                             type="file"
                             id="imageUrl"
                             name="imageUrl"
-                            onChange={handleChangeImage}
+                            onChange={handleChangeImage(setPreviewImage, setImageFile, setProduct)}
                             accept="image/*"
                             style={{display: 'none'}}
                         />

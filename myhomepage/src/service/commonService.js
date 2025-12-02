@@ -118,6 +118,57 @@ export const handleInputChange = (e, setFormData) => {
 }
 
 
+// onChange={handleChangeImage(e, setPreviewImage, setImageFile, setProduct)}  불가
+// onChange {(e) => handleChangeImage(e, setPreviewImage, setImageFile, setProduct)} 사용가능
+//export const handleChangeImage = (e, setPreviewImage, setImageFile, setProduct) => {
+
+// jsx 에서 e 를 생략하고 작성할 수 있다.
+// onChange={handleChangeImage(setPreviewImage, setImageFile, setProduct)}
+export const handleChangeImage = (setPreviewImage, setImageFile, setProduct) => (e) => {
+    // type=file 은 이미지 이외에도 항시 1개 이상의 데이터를 가져온다.
+    // 가 기본 전제로 된 속성으로 multipart를 작성하지 않아
+    // input 에서 하나의 이미지만 가져온다 하더라도 항시 [0] 번째의
+    // 데이터를 가져온다로 작성해야함
+    const html에서가져온이미지첫번째파일 = e.target.files[0];
+
+    if (html에서가져온이미지첫번째파일) {
+        if (!html에서가져온이미지첫번째파일.type.startsWith('image/')) {
+            alert("이미지 파일만 업로드 가능합니다.");
+            e.target.value = ""; // 한 번더 안정적으로 input 내 데이터 제거
+            return;
+        }
+
+        // 파일 크기 검증 (예 : 5MB 제한)
+        const maxsize = 5 * 1024 * 1024;
+        if (html에서가져온이미지첫번째파일.size > maxsize) {
+            alert("파일 크기는 5MB 이하여야 합니다.");
+            e.target.value = "";
+            return;
+        }
+
+        // FileReader 라는 자바스크립트에 내장된 읽기 기능을 사용해서
+        // 파일 미리보기 생성
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            // FileReader를 만든 개발자가 target 한다음 value 나
+            // files[인덱스] 대신
+            // 가져온 것에 대한 결과라는 변수이름을 사용하여
+            // result 를 사용한다.
+            setPreviewImage(event.target.result);
+        };
+        // URL에 존재하는 데이터를 읽겠다. reader 에서
+        reader.readAsDataURL(html에서가져온이미지첫번째파일);
+
+        setImageFile(html에서가져온이미지첫번째파일);
+
+        setProduct(prev => ({
+            ...prev,
+            imageUrl: html에서가져온이미지첫번째파일
+        }))
+    }
+}
+
+
 /***********************************************************
                 유효성 검사 함수
  ***********************************************************/

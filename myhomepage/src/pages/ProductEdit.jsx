@@ -1,18 +1,23 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
+import {fetchProductDetail} from "../service/ApiService";
+import axios from "axios";
+import {handleChangeImage} from "../service/commonService";
 /**
  * 과제 3 : 수정하기 수정된 결과 반영
- *      check 사항 : 1. 상품 수정 시 현재 등록된 메인 이미지 가져오기
  *      check 사항 : 2. 메인 이미지 수정 하고, 수정된 결과 미리보기
  *      check 사항 : 3. 수정된 내용이 제대로 반영 되는가
  *          * 참고 : 미리보기만 하고, 수정하기 버튼을 눌러야 메인이미지 수정되게 하기
  *
  * */
 const ProductEdit = () => {
+    // 윈도우는 기본적으로 원화모양으로 폴더 나 위치 구분 코드상에서는 \ 모형으로 표기
+    // \ 주석에도 쓰면 안됨 !!!!!!!  \ 특수기호를 추가로 작성하는 것은 기본으로 내장되어 있는 특수기호들에 대한 효과가 발동되므로 사용 XXX
+    const defaultImg = '/static/img/default.png';
     const {id} = useParams();
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
-
+    // 초기값을 로딩은 true -> false
     const [loading, setLoading] = useState(false);
     const [product, setProduct] = useState({
         productName: '',
@@ -34,9 +39,14 @@ const ProductEdit = () => {
         '전자제품', '가전제품', '의류', '식품', '도서', '악세사리', '스포츠', '완구', '가구', '기타'
     ]
 
+    useEffect(() => {
+        fetchProductDetail(axios, id, setProduct, navigate, setLoading)
+    },
+        [id]);
+
     const handleCancel = () => {
         if(window.confirm("수정을 취소하시겠습니까? 변경사항이 저장되지 않습니다.")) {
-            navigate(`/products/${id}`);
+            navigate(`/product/${id}`);
         }
     }
 
@@ -44,6 +54,7 @@ const ProductEdit = () => {
         fileInputRef.current?.click();
     }
 
+    // isActive data 가 null 일 경우 N 으로 체크 표기 하게 설정
     return (
         <div className="page-container">
             <div className="product-upload-container">
@@ -55,7 +66,7 @@ const ProductEdit = () => {
                         <label>상품 이미지</label>
                         <div className="profile-image-container" onClick={handleImageClick}>
                             <img
-                                src={previewImage || product.imageUrl || '/static/img/default.png'}
+                                src={previewImage || product.imageUrl || defaultImg}
                                 alt="상품 이미지"
                                 className="profile-image"
                             />
@@ -68,6 +79,7 @@ const ProductEdit = () => {
                             ref={fileInputRef}
                             accept="image/*"
                             style={{ display: 'none' }}
+                            onChange={handleChangeImage(setPreviewImage, setImageFile, setProduct)}
                         />
                         <small className="form-hint">
                             이미지를 클릭하여 변경할 수 있습니다.(최대 5MB)
