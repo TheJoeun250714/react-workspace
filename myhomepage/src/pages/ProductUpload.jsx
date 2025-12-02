@@ -7,8 +7,7 @@ import {handleInputChange} from "../service/commonService";
 // profileImage -> imageUrl 을 이용해서 상품 업로드시 제품 미리보기
 {/*
 과제 1: 상품 업로드를 진행할 때, 선택한 이미지 미리보기 설정
-const handleChangeImage = () => {
-}
+
 
 */}
 const ProductUpload = () => {
@@ -24,11 +23,84 @@ const ProductUpload = () => {
         manufacturer :'',
         imageUrl :'',
     });
+    const [formData, setFormData] = useState({
+        productName :'',
+        productCode :'',
+        category :'',
+        price :'',
+        stockQuantity :'',
+        description :'',
+        manufacturer :'',
+        imageUrl :'',
+    });
+
+    // formData 변수 생성
+
+
+
+
+
     const [errors, setErrors] = useState({});
+
+    // 이미지 미리보기를 위한 state 추가
+    const [previewImage, setPreviewImage] = useState(null);
 
     const categories = [
         '전자제품','가전제품','의류','식품','도서','악세사리','스포츠','완구','가구','기타'
     ]
+
+
+
+
+    const handleChangeImage = (e) => {
+        // type=file 은 이미지 이외에도 항시 1개 이상의 데이터를 가져온다.
+        // 가 기본 전제로 된 속성으로 multipart를 작성하지 않아
+        // input 에서 하나의 이미지만 가져온다 하더라도 항시 [0] 번째의
+        // 데이터를 가져온다로 작성해야함
+        const html에서가져온이미지첫번째파일 = e.target.files[0];
+
+        if(html에서가져온이미지첫번째파일) {
+            if(!html에서가져온이미지첫번째파일.type.startsWith('image/')) {
+                alert("이미지 파일만 업로드 가능합니다.");
+                e.target.value = ""; // 한 번더 안정적으로 input 내 데이터 제거
+                return;
+            }
+
+            // 파일 크기 검증 (예 : 5MB 제한)
+            const maxsize = 5 * 1024 * 1024;
+            if(html에서가져온이미지첫번째파일.size > maxsize) {
+                alert("파일 크기는 5MB 이하여야 합니다.");
+                e.target.value = "";
+                return;
+            }
+
+            // FileReader 라는 자바스크립트에 내장된 읽기 기능을 사용해서
+            // 파일 미리보기 생성
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                // FileReader를 만든 개발자가 target 한다음 value 나
+                // files[인덱스] 대신
+                // 가져온 것에 대한 결과라는 변수이름을 사용하여
+                // result 를 사용한다.
+                setPreviewImage(event.target.result);
+            };
+            // URL에 존재하는 데이터를 읽겠다. reader 에서
+            reader.readAsDataURL(html에서가져온이미지첫번째파일);
+
+            setProduct(prev => ({
+                ...prev,
+                imageUrl: html에서가져온이미지첫번째파일
+            }))
+        }
+    }
+
+    // input 창 display = none 처리
+    // 상품미리보기가 null 값일 경우 보여주지 않기 세팅
+    // "previewImg" 문자열을 변수로 사용
+
+
+
+
 
     //  기존 변수명칭은 모두 setFormData 사용
     //  setProduct 변수명칭 사용
@@ -49,6 +121,23 @@ const ProductUpload = () => {
         if(!product.productName.trim()){
             newErrors.productName='상품명을 입력하세요.';
         }
+        if(!product.productCode.trim()){
+            newErrors.productCode='상품코드를 입력하세요.';
+        }
+        if(!product.category){
+            newErrors.category='카테고리를 선택하세요.';
+        }
+        if(!product.price || product.price <= 0){
+            newErrors.price='가격을 입력하세요.';
+        }
+        if(!product.stockQuantity || product.stockQuantity <= 0){
+            newErrors.stockQuantity='재고수량을 입력하세요.';
+        }
+
+        setErrors(newErrors);
+        // 에러값이 모두다 데이터 0 일 때만 통과
+        // 에러값이 존재하면 등록 불가 처리
+        return Object.keys(newErrors).length === 0;
     }
 
     // 폼 제출 핸들러
@@ -202,21 +291,36 @@ const ProductUpload = () => {
                         />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="imageUrl">
-                            이미지 URL
+                        <label htmlFor="imageUrl" className="btn-upload">
+                            이미지 업로드
                         </label>
                         <input
                             type="file"
                             id="imageUrl"
                             name="imageUrl"
-                            value={product.imageUrl}
-                            onChange={handleChange}
-                            maxLength="500"
+                            onChange={handleChangeImage}
+                            accept="image/*"
+                            style={{ display: 'none' }}
                         />
                         {/**/}
                         <small className="form-hint">
-                            상품 이미지의 URL 을 입력하세요.
+                            상품 이미지를 업로드 하세요.(최대 5MB 이미지 파일만 가능)
                         </small>
+                        {previewImage &&(
+                            <div className="image-preview">
+                            <img src={previewImage}
+                                 alt={previewImage}
+                                 style={{
+                                     maxWidth:'300px',
+                                     maxHeight:'300px',
+                                     marginTop:'10px',
+                                     border:'1px solid #ddd',
+                                     borderRadius:'5px',
+                                     paddingTop:'5px'
+                                 }}
+                            />
+                            </div>
+                        )}
                     </div>
                     <div className="form-group">
                         <label htmlFor="description">
