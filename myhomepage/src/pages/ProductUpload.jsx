@@ -30,15 +30,10 @@ const ProductUpload = () => {
         price :'',
         stockQuantity :'',
         description :'',
-        manufacturer :'',
-        imageUrl :'',
+        manufacturer :''
     });
 
-    // formData 변수 생성
-
-
-
-
+    const [imageFile, setImageFile] = useState(null);
 
     const [errors, setErrors] = useState({});
 
@@ -86,6 +81,8 @@ const ProductUpload = () => {
             };
             // URL에 존재하는 데이터를 읽겠다. reader 에서
             reader.readAsDataURL(html에서가져온이미지첫번째파일);
+
+            setImageFile(html에서가져온이미지첫번째파일);
 
             setProduct(prev => ({
                 ...prev,
@@ -152,8 +149,29 @@ const ProductUpload = () => {
         setLoading(true);
         // 백엔드 연결 시도
         try{
+            const uploadFormdata = new FormData();
+
+            // product 에서 imageUrl 을 제외한 나머지 데이터만 productData 변수이름 내에 데이터 전달
+            const {imageUrl, ...productData} = product;
+
+            // product 정보를 JSON Blob 으로 추가
+            const productBlob = new Blob(
+                [JSON.stringify(productData)],
+                {type: 'application/json'}
+            );
+            uploadFormdata.append('product', productBlob);
+
+            // 이미지 파일이 있으면 추가
+            if(imageFile) {
+                uploadFormdata.append('imageFile', imageFile);
+            }
+
             const r = await  axios.post(
-                'http://localhost:8085/api/product',product
+                'http://localhost:8085/api/product', uploadFormdata ,{
+                    headers : {
+                        'Content-Type' : 'multipart/form-data'
+                    }
+                }
             );
             if(r.data.success){
                 alert(r.data.message);
