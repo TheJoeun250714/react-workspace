@@ -6,8 +6,10 @@ import {handleInputChange} from "../service/commonService";
 // 상품 이미지 업로드 변경
 // profileImage -> imageUrl 을 이용해서 상품 업로드시 제품 미리보기
 {/*
-과제 1: 상품 업로드를 진행할 때, 선택한 이미지 미리보기 설정
+과제 1: 상품 업로드시 - isActive 를 선택하여 판매중 / 판매중지중 선택하여 업로드 가능하도록 설정
 
+과제 2: serviceImpl 에서 main.jpg로 저장되는 것이 아니라,
+        main - 본래이름 형태로 저장되게 코드 수정
 
 */}
 const ProductUpload = () => {
