@@ -72,8 +72,23 @@ const BoardWrite = () => {
         try{
             const boardUploadFromData = new FormData();
             // 1. imageUrl 을 제외한 나머지 데이터 JSON 변환
+            const {imageUrl, ...boardDataWithoutImage} = formData;
+
             // 2. 게시물 작성자에 = user로 로그인했을 때 멤버 아이디 넣기
+            boardDataWithoutImage.writer = user?.memberEmail;
             // 3. boardDataBlob
+            const boardDataBlob = new Blob(
+                [JSON.stringify(boardDataWithoutImage)],
+                {type:'application/json'}
+            );
+
+            // FormData에 board 데이터 추가
+            boardUploadFromData.append('board', boardDataBlob);
+
+            // 4. 이미지 파일이 있으면 formData에 추가
+            if(uploadedBoardImageFile) boardUploadFromData.append('imageFile', uploadedBoardImageFile);
+
+            // 5. 백엔드 API 호출
             boardSave(axios,
                 {...formData,
                     writer:user?.memberEmail
