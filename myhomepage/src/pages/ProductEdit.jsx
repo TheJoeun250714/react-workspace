@@ -2,7 +2,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import {fetchProductDetail} from "../service/ApiService";
 import axios from "axios";
-import {handleChangeImage} from "../service/commonService";
+import {handleChangeImage, handleInputChange} from "../service/commonService";
 /**
  * 과제 3 : 수정하기 수정된 결과 반영
  *      check 사항 : 2. 메인 이미지 수정 하고, 수정된 결과 미리보기
@@ -82,6 +82,7 @@ const ProductEdit = () => {
 
 
         const uploadFormData = new FormData();
+        // 따로 제외하고 싶은 데이터의 변수명칭을 ... 형태가 나오기 전에 작성하여 제거한 후, 나머지 데이터를 전달할 때 사용하는 방법
         const {imageUrl, ...updatProductData} = product;
         const updateBlob = new Blob(
             [JSON.stringify(updatProductData)],
@@ -89,12 +90,12 @@ const ProductEdit = () => {
         );
         uploadFormData.append("product", updateBlob);
         if(imageFile) {
-            uploadFormData.append("imageUrl", imageUrl);
+            uploadFormData.append("imageFile", imageFile);
         }
 
         const r = await axios.put(
             // 1. 백엔드 연결 주소
-            'http://localhost:8085/api/product/'+{id},
+            `http://localhost:8085/api/product/${id}`,
             // 2. 어떤 데이터를 전달할 것인가
             uploadFormData,
             // 3. 백엔드에게 어떤 데이터 를 전달할지 헤더로 알릴 것인가
@@ -120,7 +121,9 @@ const ProductEdit = () => {
     }
 
 
-
+    const handleChange = (e) => {
+        handleInputChange(e,setProduct);
+    }
 
 
 
@@ -167,6 +170,7 @@ const ProductEdit = () => {
                             name="productName"
                             value={product.productName}
                             placeholder="상품명을 입력하세요."
+                            onChange={handleChange}
                             maxLength="200"
                         />
                         {errors.productName && (
@@ -184,6 +188,7 @@ const ProductEdit = () => {
                             id="productCode"
                             name="productCode"
                             value={product.productCode}
+
                             readOnly
                         />
                         <small className="form-hint">
@@ -199,7 +204,9 @@ const ProductEdit = () => {
                         <select
                             id="category"
                             name="category"
-                            value={product.category}>
+                            value={product.category}
+                            onChange={handleChange}
+                        >
                             <option value="">카테고리를 선택하세요.</option>
                             {categories.map(category => (
                                 <option key={category} value={category}>
@@ -222,6 +229,7 @@ const ProductEdit = () => {
                             id="price"
                             name="price"
                             value={product.price}
+                            onChange={handleChange}
                             placeholder="가격 (원)"
                             min="0"
                         />
@@ -239,6 +247,7 @@ const ProductEdit = () => {
                             type="number"
                             id="stockQuantity"
                             name="stockQuantity"
+                            onChange={handleChange}
                             value={product.stockQuantity}
                             placeholder="재고 수량"
                             min="0"
@@ -258,6 +267,7 @@ const ProductEdit = () => {
                             id="manufacturer"
                             name="manufacturer"
                             value={product.manufacturer}
+                            onChange={handleChange}
                             placeholder="제조사 명을 입력하세요."
                             maxLength="100"
                         />
@@ -302,6 +312,7 @@ const ProductEdit = () => {
                             id="description"
                             name="description"
                             value={product.description}
+                            onChange={handleChange}
                             placeholder="상품에 대한 설명을 입력하세요"
                             rows="5"
                         />
