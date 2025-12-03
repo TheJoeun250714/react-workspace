@@ -69,7 +69,6 @@ const BoardWrite = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); //제출 일시 중지
 
-        try{
             const boardUploadFromData = new FormData();
             // 1. imageUrl 을 제외한 나머지 데이터 JSON 변환
             const {imageUrl, ...boardDataWithoutImage} = formData;
@@ -93,10 +92,7 @@ const BoardWrite = () => {
                 {...formData,
                     writer:user?.memberEmail
                 }, navigate);
-        }
-        catch (err) {
 
-        }
 
     };
     //export const formatPrice = (price) => {
