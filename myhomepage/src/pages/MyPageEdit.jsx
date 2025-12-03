@@ -5,6 +5,7 @@ import {handleInputChange} from "../service/commonService";
 import {fetchMypageEdit, fetchMypageEditWithProfile, getProfileImageUrl} from "../service/ApiService";
 import axios from "axios";
 
+
 const MyPageEdit = () => {
     const navigate = useNavigate();
     const {user, isAuthenticated , updateUser, loading} = useAuth();
