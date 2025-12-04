@@ -41,7 +41,7 @@ const BoardWrite = () => {
     // 상세 이미지 관련 (최대 5장)
     const detailImgsFileInputRef = useRef(null);
     const [uploadedDetailBoardImageFiles, setuploadedDetailBoardImageFiles] = useState(null);
-    const [boardDetailImagePreviews, setboardDetailImagePreviews] = useState(null);
+    const [boardDetailImagePreviews, setboardDetailImagePreviews] = useState([]);
 
 
     // 상세 이미지 관련 (최대 5장)
@@ -89,7 +89,7 @@ const BoardWrite = () => {
         const files = Array.from(e.target.files);
 
         // 최대 5장 까지만 허용
-        if (files.length > 0) {
+        if (files.length > 5) {
             alert("상세 이미지는 최대 5장 까지  업로드 가능합니다.");
             return;
         }
@@ -196,6 +196,41 @@ const BoardWrite = () => {
                                 </div>
                             )}
                         </div>
+
+                        {/* 상세 이미지 여러 장 업로드 & 미리보기 */}
+                        <div className="form-group">
+                            <label htmlFor="detailImages" className="btn-upload">
+                                상세 이미지 추가하기 (최대 5장)
+                            </label>
+                            <input
+                            type="file"
+                            id="detailImages"
+                            name="detailImages"
+                            ref={detailImgsFileInputRef}
+                            onChange={handleDetailImagesChanges}
+                            accept="image/*"
+                            multiple
+                            style={{display: 'none'}}
+                            />
+                            <small className="form-hint">
+                                상세 이미지를 업로드하세요. (최대 5개, 각 5MB이하)
+                            </small>
+
+                            {boardDetailImagePreviews.length > 0 && (
+                                <div className="multiple-images-preview">
+                                    <p className="detail-images-selected-text">
+                                        선택된 이미지 : {boardDetailImagePreviews.length} 개
+                                    </p>
+                                    {boardDetailImagePreviews.map((image, index) => (
+                                        <div key={index} className="detail-image-item">
+                                            <img src={image}
+                                                 alt={`상세이미지 ${index + 1}`} />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         <label>내용 :
                             <textarea
                                 id="content"
