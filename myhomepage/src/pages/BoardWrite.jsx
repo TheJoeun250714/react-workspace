@@ -28,78 +28,51 @@ if (user) {
       email = undefined;
 }
 * */
-/*
-TODO : 게시물 작성하기 에서 게시물 관련 이미지 추가 넣기
-// 1. 게시물 작성할 때, 게시물 이미지 추가하기 와 같은 라벨 추가
-// 2. 라벨을 선택했을 때 이미지만 선택 가능하도록 input 설정
-// 3. input = display none
-// 4. 이미지 추가하기 클릭하면 새롭게 클릭된 이미지로 변경
 
-
-
-
-
-
-// 등록하기를 했을 경우에만 추가하기 가능!
- */
 const BoardWrite = () => {
-    // imageFile : 업로드할 이미지파일을 따로 저장
-    // imageUrl  :  클라이언트가 input 창에 넣어준 데이터
-
-
-    // form 데이터 내부 초기값
-    // 작성자 -> 나중에 로그인한 아이디로 박제 변경불가하게
-    // react-router-dom 에 존재하는 path 주소 변경 기능 사용
     const navigate = useNavigate();
     const {user, isAuthenticated, logoutFn} = useAuth();
-    const boarImgFileInputRef = useRef(null);
 
-    // 이미지 관련 상태
-    const [uploadedBoardImageFile, setUploadedBoardImageFile] = useState(null); // 실제 db에 업로드하고, 파일 폴더에 저장할 이미지 파일
-    const [boardImagePreview, setBoardImagePreview] = useState(null);  // 이미지 미리보기 URL
-    // js 는 컴파일형태가 아니고, 변수 정의는 순차적으로 진행하므로, user 를 먼저 호출하고나서
-    // user 관련된 데이터 활용
-    const [boards, setBoards] = useState({
+    // 메인 이미지 관련
+    const mainImgFileInputRef = useRef(null);
+    const [uploadedMainBoardImageFile, setuploadedMainBoardImageFile] = useState(null);
+    const [boardMainImagePreview, setboardMainImagePreview] = useState(null);
+
+    // 상세 이미지 관련 (최대 5장)
+    const detailImgsFileInputRef = useRef(null);
+    const [uploadedDetailBoardImageFiles, setuploadedDetailBoardImageFiles] = useState(null);
+    const [boardDetailImagePreviews, setboardDetailImagePreviews] = useState(null);
+
+
+    // 상세 이미지 관련 (최대 5장)
+    const [board, setBoard] = useState({
         title: '',
         content: '',
-        writer: user?.memberEmail || '',
-        imageUrl : ''
+        writer: user?.memberEmail,
+
     })
-    /**
-     @boards              상태 관리 변수이름, 기능 객체
-            언제 사용하는가: input, textarea 등에서 value={boards.title} 형태로 화면에 표시
-            업  데  이  트 : setBoards() 를 통해 값 변경
-            예          시 : 사용자가 제목을 입력하면 -> boards.title 에 저장됨
-
-     @boardUploadFromData  백엔드로 데이터를 전송하기 위한 특수 객체
-            타          입 : 파일 업로드를 위한 HTML5 API
-            언제 사용하는가: axios.post() 로 서버에 데이터를 전송할 때
-            특          징 : JSON + 파일 데이터를 함께 전송 가능 multipart/form-data
-            예          시 : 제목, 내용(JSON) + 이미지 파일을 한 번에 전송
-     */
     const handleSubmit = async (e) => {
-        e.preventDefault(); //제출 일시 중지
+        e.preventDefault();
 
-            const boardUploadFromData = new FormData();
-            // 1. imageUrl 을 제외한 나머지 데이터 JSON 변환
-            const {imageUrl, ...boardDataWithoutImage} = boards;
+        const boardUploadFromData = new FormData();
 
-            // 2. 게시물 작성자에 = user로 로그인했을 때 멤버 아이디 넣기
-            boardDataWithoutImage.writer = user?.memberEmail;
-            // 3. boardDataBlob
-            const boardDataBlob = new Blob(
-                [JSON.stringify(boardDataWithoutImage)],
-                {type:'application/json'}
-            );
+        const boardData = {
+            title: board.title,
+            content: board.content,
+            writer: user?.memberEmail,
 
-            // boardUploadFromData에 board 데이터 추가
-            boardUploadFromData.append('board', boardDataBlob);
+        }
 
-            // 4. 이미지 파일이 있으면 boards 추가
-            if(uploadedBoardImageFile) boardUploadFromData.append('imageFile', uploadedBoardImageFile);
+        const boardDataBlob = new Blob(
+            [JSON.stringify(boardData)],
+            {type: 'application/json'}
+        );
 
-            // 5. 백엔드 API 호출
-           await boardSave(axios, boardUploadFromData, navigate);
+        boardUploadFromData.append('board', boardDataBlob);
+
+        if (uploadedMainBoardImageFile) boardUploadFromData.append('imageFile', uploadedMainBoardImageFile);
+
+        await boardSave(axios, boardUploadFromData, navigate);
 
 
     };
@@ -108,10 +81,57 @@ const BoardWrite = () => {
     // }
 
     const handleChange = (e) => {
-       handleInputChange(e, setBoards());
+        handleInputChange(e, setBoard);
     }
 
-    // ok를 할 경우 게시물 목록으로 돌려보내기   기능이 하나이기 때문에 if 다음 navigate 는 {} 생략 후 작성
+    // 상세 이미지 여러 장 변경 핸들러
+    const handleDetailImagesChanges = (e) => {
+        const files = Array.from(e.target.files);
+
+        // 최대 5장 까지만 허용
+        if (files.length > 0) {
+            alert("상세 이미지는 최대 5장 까지  업로드 가능합니다.");
+            return;
+        }
+
+        // 각 파일이 5MB 가 넘는지 검증
+        for (let f of files) {
+            if (f.size > 5 * 1024 * 1024) {
+                alert(`${f.name}의 크기가 5MB 를 초과합니다.`);
+                return;
+            }
+
+            if (!f.type.startsWith('image/')) {
+                alert(`${f.name}은(는) 이미지 파일이 아닙니다.`);
+                return;
+            }
+        }
+        // for 문을 통해 모든 사진에 대한 검증이 종료되면, 상세이미지 파일에 파일명칭 저장
+        setuploadedDetailBoardImageFiles(files);
+
+        // 미리보기 생성
+        const 미리보기할_상세사진들 = [];
+        let 사진개수 = 0;
+
+        files.forEach((file, 사진순서) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                미리보기할_상세사진들[사진순서] = reader.result;
+                사진개수++;
+
+                // 모든 파일 로드 완료 시
+                if(사진개수 === files.length) {
+                    // 미리보기화면에서 보일 수 있도록 setter 를 이용하여 미리보기 변수에 저장
+                    setboardDetailImagePreviews(미리보기할_상세사진들);
+                }
+            };
+            // 파일 하나씩 하나씩 미리보기 생성~
+            reader.readAsDataURL(file);
+        })
+
+    }
+
+
     const handleCancel = () => {
         if (window.confirm("작성을 취소하시겠습니까?")) navigate('/board');
     }
@@ -122,24 +142,19 @@ const BoardWrite = () => {
                 <>
                     <h1>글쓰기</h1>
                     <form onSubmit={handleSubmit}>
-                        {/* 로그인 상태에 따라 다른 메뉴 표시
-                         boards.writer 에 user?.memberEmail 데이터를 전달하기
-                         */}
 
-                    <div className="writer-section">
-                        <label>작성자 :</label>
-                        <div className="writer-display">
-                            <span className="writer-email">{user?.memberName}</span>
+                        <div className="writer-section">
+                            <label>작성자 :</label>
+                            <div className="writer-display">
+                                <span className="writer-email">{user?.memberName}</span>
+                            </div>
                         </div>
-                    </div>
 
-
-
-                            <label>제목 :
+                        <label>제목 :
                             <input type="text"
                                    id="title"
                                    name="title"
-                                   value={boards.title}
+                                   value={board.title}
                                    onChange={handleChange}
                                    placeholder="제목을 입력하세요."
                                    maxLength={200}
@@ -155,8 +170,8 @@ const BoardWrite = () => {
                                 type="file"
                                 id="imageUrl"
                                 name="imageUrl"
-                                ref={boarImgFileInputRef}
-                                onChange={handleChangeImage(setBoardImagePreview, setUploadedBoardImageFile, setBoards)}
+                                ref={mainImgFileInputRef}
+                                onChange={handleChangeImage(setboardMainImagePreview, setuploadedMainBoardImageFile, setBoard)}
                                 accept="image/*"
                                 style={{display: 'none'}}
                             />
@@ -164,10 +179,10 @@ const BoardWrite = () => {
                                 게시물 이미지를 업로드 하세요. (최대 5MB, 이미지 파일만 가능)
                             </small>
 
-                            {boardImagePreview && (
+                            {boardMainImagePreview && (
                                 <div className="image-preview">
                                     <img
-                                        src={boardImagePreview}
+                                        src={boardMainImagePreview}
                                         alt="미리보기"
                                         style={{
                                             maxWidth: '100%',
@@ -185,7 +200,7 @@ const BoardWrite = () => {
                             <textarea
                                 id="content"
                                 name="content"
-                                value={boards.content}
+                                value={board.content}
                                 onChange={handleChange}
                                 placeholder="내용을 입력하세요."
                                 rows={15}
@@ -208,13 +223,13 @@ const BoardWrite = () => {
 
                     </form>
                 </>
-                ) : (
+            ) : (
                 navigate('/login')
-                )
+            )
             }
         </div>
     )
 };
 
 
-    export default BoardWrite;
+export default BoardWrite;
