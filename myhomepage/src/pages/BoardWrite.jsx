@@ -39,9 +39,9 @@ const BoardWrite = () => {
     const [boardMainImagePreview, setboardMainImagePreview] = useState(null);
 
     // 상세 이미지 관련 (최대 5장)
-    const detailImgsFileInputRef = useRef(null);
-    const [uploadedDetailBoardImageFiles, setuploadedDetailBoardImageFiles] = useState(null);
-    const [boardDetailImagePreviews, setboardDetailImagePreviews] = useState([]);
+    const 상세사진_새로고침해도_상태변화없도록_설정 = useRef(null);
+    const [상세사진_이름들, set상세사진_이름들] = useState(null);
+    const [상세사진들_미리보기, set상세사진들_미리보기] = useState([]);
 
 
     // 상세 이미지 관련 (최대 5장)
@@ -70,8 +70,16 @@ const BoardWrite = () => {
 
         boardUploadFromData.append('board', boardDataBlob);
 
-        if (uploadedMainBoardImageFile) boardUploadFromData.append('imageFile', uploadedMainBoardImageFile);
+        if (uploadedMainBoardImageFile) boardUploadFromData.append('mainImage', uploadedMainBoardImageFile);
 
+        // 상세 이미지들 추가
+
+        if(상세사진_이름들 && 상세사진_이름들.length > 0) {
+            // forEach 는 향상된 for 문으로 [] 에서 한장씩 꺼내 추가
+            상세사진_이름들.forEach((사진한장씩) => {
+                boardUploadFromData.append('detailImage', 사진한장씩);
+            });
+        }
         await boardSave(axios, boardUploadFromData, navigate);
 
 
@@ -107,7 +115,7 @@ const BoardWrite = () => {
             }
         }
         // for 문을 통해 모든 사진에 대한 검증이 종료되면, 상세이미지 파일에 파일명칭 저장
-        setuploadedDetailBoardImageFiles(files);
+        set상세사진_이름들(files);
 
         // 미리보기 생성
         const 미리보기할_상세사진들 = [];
@@ -122,7 +130,7 @@ const BoardWrite = () => {
                 // 모든 파일 로드 완료 시
                 if(사진개수 === files.length) {
                     // 미리보기화면에서 보일 수 있도록 setter 를 이용하여 미리보기 변수에 저장
-                    setboardDetailImagePreviews(미리보기할_상세사진들);
+                    set상세사진들_미리보기(미리보기할_상세사진들);
                 }
             };
             // 파일 하나씩 하나씩 미리보기 생성~
@@ -206,7 +214,7 @@ const BoardWrite = () => {
                             type="file"
                             id="detailImages"
                             name="detailImages"
-                            ref={detailImgsFileInputRef}
+                            ref={상세사진_새로고침해도_상태변화없도록_설정}
                             onChange={handleDetailImagesChanges}
                             accept="image/*"
                             multiple
@@ -216,12 +224,12 @@ const BoardWrite = () => {
                                 상세 이미지를 업로드하세요. (최대 5개, 각 5MB이하)
                             </small>
 
-                            {boardDetailImagePreviews.length > 0 && (
+                            {상세사진들_미리보기.length > 0 && (
                                 <div className="multiple-images-preview">
                                     <p className="detail-images-selected-text">
-                                        선택된 이미지 : {boardDetailImagePreviews.length} 개
+                                        선택된 이미지 : {상세사진들_미리보기.length} 개
                                     </p>
-                                    {boardDetailImagePreviews.map((image, index) => (
+                                    {상세사진들_미리보기.map((image, index) => (
                                         <div key={index} className="detail-image-item">
                                             <img src={image}
                                                  alt={`상세이미지 ${index + 1}`} />
